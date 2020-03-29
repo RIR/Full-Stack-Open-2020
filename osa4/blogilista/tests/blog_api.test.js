@@ -71,6 +71,22 @@ describe('In blogs API', () => {
       expect(response.body.length).toBe(initialBlogs.length + 1);
       expect(titles).toContain(newBlog.title);
     });
+
+    test("if likes property is not given it's value will be set to 0 ", async () => {
+      const newBlog = {
+        title: 'New Blog Entry',
+        author: 'R.R',
+        url: 'https://foo.bar/'
+      };
+
+      const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
+
+      expect(response.body.likes).toBe(0);
+    });
   });
 
   afterAll(() => {
