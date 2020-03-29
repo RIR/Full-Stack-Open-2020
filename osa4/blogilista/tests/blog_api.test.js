@@ -30,21 +30,47 @@ describe('In blogs API', () => {
     await blogObject.save();
   });
 
-  test('blogs are returned as json', async () => {
-    await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/);
+  describe('using GET', () => {
+    test('blogs are returned as json', async () => {
+      await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/);
+    });
+
+    test('there are two blogs', async () => {
+      const response = await api.get('/api/blogs');
+      expect(response.body.length).toBe(initialBlogs.length);
+    });
+
+    test('there is an id property defined', async () => {
+      const response = await api.get('/api/blogs');
+      response.body.map(blog => expect(blog.id).toBeDefined());
+    });
   });
 
-  test('there are two blogs', async () => {
-    const response = await api.get('/api/blogs');
-    expect(response.body.length).toBe(initialBlogs.length);
-  });
+  describe('using POST', () => {
+    test('a valid blog can be added ', async () => {
+      const newBlog = {
+        title: 'New Blog Entry',
+        author: 'R.R',
+        url: 'https://foo.bar/',
+        likes: 1
+      };
 
-  test('there is an id property defined', async () => {
-    const response = await api.get('/api/blogs');
-    response.body.map(blog => expect(blog.id).toBeDefined());
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
+
+      const response = await api.get('/api/blogs');
+
+      const titles = response.body.map(r => r.title);
+
+      expect(response.body.length).toBe(initialBlogs.length + 1);
+      expect(titles).toContain(newBlog.title);
+    });
   });
 
   afterAll(() => {
