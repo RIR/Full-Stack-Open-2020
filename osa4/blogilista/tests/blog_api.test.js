@@ -42,6 +42,11 @@ describe('In blogs API', () => {
     expect(response.body.length).toBe(initialBlogs.length);
   });
 
+  test('there is an id property defined', async () => {
+    const response = await api.get('/api/blogs');
+    response.body.map(blog => expect(blog.id).toBeDefined());
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });
