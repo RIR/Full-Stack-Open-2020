@@ -1,5 +1,6 @@
 const config = require('./utils/config');
 const express = require('express');
+require('express-async-errors');
 const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
