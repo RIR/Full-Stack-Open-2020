@@ -26,7 +26,7 @@ describe('In blogs API', () => {
 
     test('there is an id property defined', async () => {
       const response = await api.get('/api/blogs');
-      response.body.map(blog => expect(blog.id).toBeDefined());
+      response.body.map((blog) => expect(blog.id).toBeDefined());
     });
   });
 
@@ -36,7 +36,7 @@ describe('In blogs API', () => {
         title: 'New Blog Entry',
         author: 'R.R',
         url: 'https://foo.bar/',
-        likes: 1
+        likes: 1,
       };
 
       await api
@@ -46,7 +46,7 @@ describe('In blogs API', () => {
         .expect('Content-Type', /application\/json/);
 
       const allBlogs = await helper.blogsInDb();
-      const titles = allBlogs.map(r => r.title);
+      const titles = allBlogs.map((r) => r.title);
 
       expect(allBlogs.length).toBe(helper.initialBlogs.length + 1);
       expect(titles).toContain(newBlog.title);
@@ -56,7 +56,7 @@ describe('In blogs API', () => {
       const newBlog = {
         title: 'New Blog Entry',
         author: 'R.R',
-        url: 'https://foo.bar/'
+        url: 'https://foo.bar/',
       };
 
       const response = await api
@@ -72,26 +72,35 @@ describe('In blogs API', () => {
       const newBlog = {
         author: 'Edsger W. Dijkstra',
         url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-        likes: 5
+        likes: 5,
       };
 
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400);
+      await api.post('/api/blogs').send(newBlog).expect(400);
     });
 
     test('New blog entry must contain value for url', async () => {
       const newBlog = {
         title: 'New Blog Entry',
         author: 'Edsger W. Dijkstra',
-        likes: 5
+        likes: 5,
       };
 
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400);
+      await api.post('/api/blogs').send(newBlog).expect(400);
+    });
+  });
+
+  describe('using DELETE', () => {
+    test('Existing  blog can be removed by giving an id in request', async () => {
+      const response = await api.get('/api/blogs');
+      expect(response.body.length).toBe(2);
+
+      const firstBlog = response.body[0];
+      await api.delete(`/api/blogs/${firstBlog.id}`).expect(204);
+
+      const responseAfterDelete = await api.get('/api/blogs');
+
+      expect(responseAfterDelete.body.length).toBe(1);
+      expect(responseAfterDelete.body.map((blog) => blog.id !== firstBlog.id));
     });
   });
 
