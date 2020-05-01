@@ -89,6 +89,23 @@ describe('In blogs API', () => {
     });
   });
 
+  describe('using PUT ', () => {
+    test('Existing  blog can be modified', async () => {
+      const response = await api.get('/api/blogs');
+      const firstBlog = response.body[0];
+      const { id, title, author, url, likes } = firstBlog;
+      expect(likes).toBe(7);
+
+      const modifiedBlog = { title, author, url, likes: 10 };
+      const putResponse = await api
+        .put(`/api/blogs/${id}`)
+        .send(modifiedBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/);
+      expect(putResponse.body.likes).toBe(10);
+    });
+  });
+
   describe('using DELETE', () => {
     test('Existing  blog can be removed by giving an id in request', async () => {
       const response = await api.get('/api/blogs');
