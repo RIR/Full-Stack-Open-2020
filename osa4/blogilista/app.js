@@ -4,7 +4,11 @@ require('express-async-errors');
 const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
+
+// Routers
 const blogsRouter = require('./controllers/blogs');
+const usersRouter = require('./controllers/users');
+
 const middleware = require('./utils/middleware');
 const mongoose = require('mongoose');
 
@@ -13,7 +17,7 @@ mongoose
   .then(() => {
     console.log('connected to MongoDB');
   })
-  .catch(error => {
+  .catch((error) => {
     console.log('error connection to MongoDB:', error.message);
   });
 
@@ -23,6 +27,7 @@ app.use(bodyParser.json());
 app.use(middleware.requestLogger);
 
 app.use('/api/blogs', blogsRouter);
+app.use('/api/users', usersRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
