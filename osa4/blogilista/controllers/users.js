@@ -8,14 +8,26 @@ usersRouter.get('/', async (request, response) => {
 });
 
 usersRouter.post('/', async (request, response) => {
-  const body = request.body;
+  const { password, name, username } = request.body;
+
+  if (password === undefined) {
+    const error = new Error('Missing password');
+    error.name = 'ValidationError';
+    throw error;
+  }
+
+  if (password.length < 3) {
+    const error = new Error('Invalid password. Minimum length is 3 characters');
+    error.name = 'ValidationError';
+    throw error;
+  }
 
   const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(body.password, saltRounds);
+  const passwordHash = await bcrypt.hash(password, saltRounds);
 
   const user = new User({
-    username: body.username,
-    name: body.name,
+    username,
+    name,
     passwordHash,
   });
 
