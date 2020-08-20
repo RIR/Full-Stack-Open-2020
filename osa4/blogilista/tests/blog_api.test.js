@@ -3,12 +3,28 @@ const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const helper = require('./test_helper');
 
 describe('In blogs API', () => {
+  let token;
+  let user;
+  beforeAll(async () => {
+    await User.deleteMany({});
+    const userResponse = await api.post('/api/users').send(helper.initialUser);
+    user = userResponse.body;
+
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: helper.initialUser.username, password: helper.initialUser.password });
+
+    token = `bearer ${loginResponse.body.token}`;
+  });
+
   beforeEach(async () => {
+    const initialBlogs = helper.initialBlogs.map((blog) => ({ ...blog, user: user.id }));
     await Blog.deleteMany({});
-    await Blog.insertMany(helper.initialBlogs);
+    await Blog.insertMany(initialBlogs);
   });
 
   describe('using GET', () => {
@@ -41,6 +57,7 @@ describe('In blogs API', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', token)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/);
@@ -52,6 +69,21 @@ describe('In blogs API', () => {
       expect(titles).toContain(newBlog.title);
     });
 
+    test('a valid blog can not be added if token is missing', async () => {
+      const newBlog = {
+        title: 'New Blog Entry',
+        author: 'R.R',
+        url: 'https://foo.bar/',
+        likes: 1,
+      };
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+        .expect('Content-Type', /application\/json/);
+    });
+
     test("if likes property is not given it's value will be set to 0 ", async () => {
       const newBlog = {
         title: 'New Blog Entry',
@@ -61,6 +93,7 @@ describe('In blogs API', () => {
 
       const response = await api
         .post('/api/blogs')
+        .set('Authorization', token)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/);
@@ -75,7 +108,7 @@ describe('In blogs API', () => {
         likes: 5,
       };
 
-      await api.post('/api/blogs').send(newBlog).expect(400);
+      await api.post('/api/blogs').set('Authorization', token).send(newBlog).expect(400);
     });
 
     test('New blog entry must contain value for url', async () => {
@@ -85,7 +118,7 @@ describe('In blogs API', () => {
         likes: 5,
       };
 
-      await api.post('/api/blogs').send(newBlog).expect(400);
+      await api.post('/api/blogs').set('Authorization', token).send(newBlog).expect(400);
     });
   });
 
@@ -112,7 +145,7 @@ describe('In blogs API', () => {
       expect(response.body.length).toBe(2);
 
       const firstBlog = response.body[0];
-      await api.delete(`/api/blogs/${firstBlog.id}`).expect(204);
+      await api.delete(`/api/blogs/${firstBlog.id}`).set('Authorization', token).expect(204);
 
       const responseAfterDelete = await api.get('/api/blogs');
 
