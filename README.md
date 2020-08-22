@@ -3,5 +3,5 @@ My solutions for assignments of the [Full Stack Open 2020 course](https://fullst
 
 Parts 0-3 fully done earlier in the 2019 implementation of the course.
 
-- [Part 4](/osa4) **TODO**
+- [Part 4](/osa4)
 
