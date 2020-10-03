@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BlogList from './components/BlogList';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
+import Togglable from './components/Togglable';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -18,6 +19,8 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [newBlog, setNewBlog] = useState(initialBlogState);
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -70,6 +73,8 @@ const App = () => {
   const addBlog = (event) => {
     event.preventDefault();
 
+    blogFormRef.current.toggleVisibility();
+
     blogService
       .create(newBlog)
       .then((returnedBlog) => {
@@ -105,7 +110,9 @@ const App = () => {
       ) : (
         <div>
           <BlogList blogs={blogs} user={user} message={message} handleLogout={handleLogout} />
-          <BlogForm addBlog={addBlog} newBlog={newBlog} handleChange={handleChange} />
+          <Togglable buttonLabel='new note' ref={blogFormRef}>
+            <BlogForm addBlog={addBlog} newBlog={newBlog} handleChange={handleChange} />
+          </Togglable>
         </div>
       )}
     </div>
