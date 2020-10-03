@@ -6,20 +6,14 @@ import Togglable from './components/Togglable';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
-const initialBlogState = {
-  title: '',
-  author: '',
-  url: '',
-};
-
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
-  const [newBlog, setNewBlog] = useState(initialBlogState);
 
+  const togglableRef = useRef();
   const blogFormRef = useRef();
 
   useEffect(() => {
@@ -59,27 +53,16 @@ const App = () => {
   const handleLogout = (event) => {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
-    setNewBlog(initialBlogState);
+    blogFormRef.current.resetBlogForm();
   };
 
-  const handleChange = (event) => {
-    const value = event.target.value;
-    setNewBlog({
-      ...newBlog,
-      [event.target.name]: value,
-    });
-  };
-
-  const addBlog = (event) => {
-    event.preventDefault();
-
-    blogFormRef.current.toggleVisibility();
+  const createBlog = (blogObject) => {
+    togglableRef.current.toggleVisibility();
 
     blogService
-      .create(newBlog)
+      .create(blogObject)
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog));
-        setNewBlog(initialBlogState);
         displayMessage({
           type: 'success',
           content: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
@@ -110,8 +93,8 @@ const App = () => {
       ) : (
         <div>
           <BlogList blogs={blogs} user={user} message={message} handleLogout={handleLogout} />
-          <Togglable buttonLabel='new note' ref={blogFormRef}>
-            <BlogForm addBlog={addBlog} newBlog={newBlog} handleChange={handleChange} />
+          <Togglable buttonLabel='new note' ref={togglableRef}>
+            <BlogForm createBlog={createBlog} ref={blogFormRef} />
           </Togglable>
         </div>
       )}
