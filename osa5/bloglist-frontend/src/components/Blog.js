@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -14,9 +14,15 @@ const Blog = ({ blog }) => {
 
   const toggleView = () => setDisplayFull(!displayFull);
 
+  const addLike = (event) => {
+    event.preventDefault();
+    const updatedBlog = { ...blog, likes: blog.likes += 1 };
+    likeBlog(updatedBlog);
+  };
+
   const displayButton = <button onClick={toggleView}>{displayFull ? 'hide' : 'view'}</button>;
 
-  const likeButton = <button>like</button>;
+  const likeButton = <button onClick={addLike}>like</button>;
 
   return (
     <div style={blogStyle}>

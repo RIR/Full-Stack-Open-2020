@@ -71,6 +71,19 @@ const App = () => {
       .catch((error) => displayMessage({ type: 'error', content: 'Adding failed' }));
   };
 
+  const likeBlog = (blogObject) => {
+    blogService
+      .update(blogObject)
+      .then((returnedBlog) => {
+        setBlogs(blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog)));
+        displayMessage({
+          type: 'success',
+          content: `Blog ${returnedBlog.title} was liked`,
+        });
+      })
+      .catch((error) => displayMessage({ type: 'error', content: 'Adding failed' }));
+  };
+
   // Helper function for setting and clearing the message, which Notification component can use.
   const displayMessage = (message) => {
     setMessage(message);
@@ -92,7 +105,7 @@ const App = () => {
         />
       ) : (
         <div>
-          <BlogList blogs={blogs} user={user} message={message} handleLogout={handleLogout} />
+          <BlogList blogs={blogs} user={user} message={message} likeBlog={likeBlog} handleLogout={handleLogout} />
           <Togglable buttonLabel='new note' ref={togglableRef}>
             <BlogForm createBlog={createBlog} ref={blogFormRef} />
           </Togglable>
