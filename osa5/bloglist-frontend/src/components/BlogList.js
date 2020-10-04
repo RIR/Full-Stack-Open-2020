@@ -2,7 +2,7 @@ import React from 'react';
 import Blog from './Blog';
 import Notification from './Notification';
 
-const BlogList = ({ blogs, user, message, likeBlog, handleLogout }) => {
+const BlogList = ({ blogs, user, message, likeBlog, removeBlog, handleLogout }) => {
   const sortBylikes = (a, b) => b.likes - a.likes;
 
   return (
@@ -15,7 +15,7 @@ const BlogList = ({ blogs, user, message, likeBlog, handleLogout }) => {
       <ul>
         {blogs.sort(sortBylikes).map((blog) => (
           <li key={blog.id}>
-            <Blog blog={blog} likeBlog={likeBlog} />
+            <Blog blog={blog} like={likeBlog} remove={removeBlog} user={user} />
           </li>
         ))}
       </ul>
