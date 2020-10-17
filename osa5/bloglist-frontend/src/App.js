@@ -55,7 +55,7 @@ const App = () => {
     }
   };
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
     blogFormRef.current.resetBlogForm();

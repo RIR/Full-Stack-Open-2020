@@ -53,4 +53,7 @@ const BlogForm = React.forwardRef(({ createBlog }, ref) => {
   );
 });
 
+BlogForm.displayName = 'BlogForm';
+
+
 export default BlogForm;

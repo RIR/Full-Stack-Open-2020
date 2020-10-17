@@ -1,6 +1,5 @@
 import React from 'react';
-require('../App.css');
-
+import '../App.css';
 
 const Notification = ({ message }) => (message === null ? null : <div className={message.type}>{message.content}</div>);
 

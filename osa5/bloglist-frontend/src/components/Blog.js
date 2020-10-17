@@ -15,12 +15,12 @@ const Blog = ({ blog, like, remove, user: currentUser }) => {
 
   const toggleView = () => setDisplayFull(!displayFull);
 
-  const likeBlog = (event) => {
+  const likeBlog = () => {
     const updatedBlog = { ...blog, likes: (blog.likes += 1) };
     like(updatedBlog);
   };
 
-  const removeBlog = (event) => {
+  const removeBlog = () => {
     if (window.confirm(`Remove blog ${title} by ${author}?`)) {
       remove(blog);
     }
