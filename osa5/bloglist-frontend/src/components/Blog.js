@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 const Blog = ({ blog, like, remove, user: currentUser }) => {
   const blogStyle = {
     paddingTop: 10,

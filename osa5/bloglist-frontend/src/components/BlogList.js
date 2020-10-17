@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Blog from './Blog';
 import Notification from './Notification';
 
@@ -21,6 +22,13 @@ const BlogList = ({ blogs, user, message, likeBlog, removeBlog, handleLogout }) 
       </ul>
     </div>
   );
+};
+
+BlogList.propTypes = {
+  message: PropTypes.exact({
+    type: PropTypes.string,
+    content: PropTypes.string,
+  }),
 };
 
 export default BlogList;
