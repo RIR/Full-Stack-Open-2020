@@ -44,7 +44,7 @@ const Blog = ({ blog, like, remove, user: currentUser }) => {
       {displayFull && (
         <div>
           <p>{url}</p>
-          <p>
+          <p className='likes'>
             {likes} {likeButton}
           </p>
           <p>{user && user.username}</p>
