@@ -4,13 +4,17 @@ import { render, fireEvent } from '@testing-library/react';
 import Blog from './Blog';
 
 describe('Blog', () => {
-  const blog = {
-    title: 'Test Title',
-    author: 'Test Author',
-    url: 'www.testurl.com',
-    likes: 1,
-    user: { username: 'test user' },
-  };
+  let blog;
+
+  beforeEach(() => {
+    blog = {
+      title: 'Test Title',
+      author: 'Test Author',
+      url: 'www.testurl.com',
+      likes: 1,
+      user: { username: 'test user' },
+    };
+  });
 
   test('renders default content', () => {
     const component = render(<Blog blog={blog} />);
@@ -36,5 +40,23 @@ describe('Blog', () => {
     const likes = component.container.querySelector('.likes');
     expect(likes).toBeVisible();
     expect(likes).toHaveTextContent(1);
+  });
+
+  test('like button fires correctly', () => {
+      const likeMockHandler = jest.fn()
+    const component = render(<Blog blog={blog} user={{ username: 'random' }} like={likeMockHandler} />);
+
+    expect(component.container).toHaveTextContent('Test Title');
+    expect(component.container).toHaveTextContent('Test Author');
+
+    // Has to be done so the like button is displayed
+    const displayButton = component.getByText('view');
+    fireEvent.click(displayButton);
+
+    const likeButton = component.getByText('like');
+    fireEvent.click(likeButton);
+    fireEvent.click(likeButton);
+
+    expect(likeMockHandler.mock.calls).toHaveLength(2)
   });
 });
